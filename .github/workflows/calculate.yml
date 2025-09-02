@@ -1,0 +1,31 @@
+name: Calculate Power Requirements
+
+on:
+  workflow_dispatch:
+    inputs:
+      calculation_data:
+        description: 'JSON data from Make'
+        required: true
+        type: string
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.calc.outputs.result }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Calculate
+        id: calc
+        run: |
+          cd src
+          echo '${{ inputs.calculation_data }}' > input.json
+          node calculate.js > output.json
+          echo "result=$(cat output.json)" >> $GITHUB_OUTPUT
